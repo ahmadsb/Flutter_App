@@ -3,7 +3,7 @@ The purpose of the project is to help manage and improve a Tamer beauty center.
 
 prototype:
 
-![](https://ibb.co/XsR4SXN)
+![](file:///C:/Users/ahmadsb/Downloads/Screenshot_20190714-234530.webp)
 
 
 
