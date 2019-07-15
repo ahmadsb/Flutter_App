@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_login_page_ui/settingPage.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'ChooseBarber.dart';
@@ -129,10 +130,12 @@ class home extends State<Home> {
                     title: new Text("Settings"),
                     leading: new Icon(Icons.settings),
                     onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(new MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                          new Text("Second Page")));
+//                      Navigator.of(context).pop();
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (context) =>
+                              new SettingPage()));
                     }),
                 new Divider(),
                 new ListTile(
