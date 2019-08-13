@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login_page_ui/settingPage.dart';
+import 'package:flutter_login_page_ui/utils/auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'ChooseBarber.dart';
 import 'Widgets/CardChoose.dart';
 import 'Widgets/BarbersList.dart';
 import 'Widgets/SliderImages.dart';
+import 'data/database_helper.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -16,7 +18,9 @@ class Home extends StatefulWidget {
   }
 }
 
-class home extends State<Home> {
+class home extends State<Home> implements AuthStateListener {
+  BuildContext _ctx;
+
   String currentProfilePic = "assets/ahmad.jpg";
   String otherProfilePic = "assets/drawer.png";
 
@@ -39,6 +43,7 @@ class home extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    _ctx = context;
     final TextStyle textStyle = Theme.of(context).textTheme.display1;
 
     // TODO: implement build
@@ -134,14 +139,13 @@ class home extends State<Home> {
                       Navigator.push(
                           context,
                           new MaterialPageRoute(
-                              builder: (context) =>
-                              new SettingPage()));
+                              builder: (context) => new SettingPage()));
                     }),
                 new Divider(),
                 new ListTile(
                   title: new Text("Log out"),
                   leading: new Icon(Icons.exit_to_app),
-                  onTap: () => Navigator.pop(context),
+                  onTap: () => {onAuthStateChanged(AuthState.LOGGED_OUT)},
                 ),
               ],
             ),
@@ -283,5 +287,14 @@ class home extends State<Home> {
             ),
           )),
     );
+  }
+
+  @override
+  void onAuthStateChanged(AuthState state) async {
+    if (state == AuthState.LOGGED_OUT) {
+      var db = new DatabaseHelper();
+      await db.deleteUsers();
+      Navigator.of(_ctx).pushReplacementNamed("/");
+    }
   }
 }

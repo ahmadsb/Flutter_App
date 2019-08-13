@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_login_page_ui/utils/network_util.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter_login_page_ui/models/user.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+
+import '../Home.dart';
 
 class FormCard extends StatefulWidget {
   @override
@@ -16,52 +23,7 @@ class Box extends State<FormCard> {
   String _username = "Username";
   String _password = "Password";
 
-//  Future<bool> saveData() async {
-//    SharedPreferences preferences = await SharedPreferences.getInstance();
-//    return await preferences.setString("SharedUserName", _ValueUserName.text);
-//  }
-//
-//  Future<String> loadData() async {
-//    SharedPreferences preferences = await SharedPreferences.getInstance();
-//    return preferences.getString("SharedUserName");
-//  }
 
-//  setData() {
-//    loadData().then((value) {
-//      setState(() {
-//        _username = value;
-//      });
-//    });
-//  }
-
-
-
-  bool _isSelected = false;
-
-  void _radio() {
-    setState(() {
-      _isSelected = !_isSelected;
-//      saveData();
-//      setData();
-    });
-  }
-
-  Widget radioButton(bool isSelected) => Container(
-        width: 16.0,
-        height: 16.0,
-        padding: EdgeInsets.all(2.0),
-        decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(width: 2.0, color: Colors.black)),
-        child: isSelected
-            ? Container(
-                width: double.infinity,
-                height: double.infinity,
-                decoration:
-                    BoxDecoration(shape: BoxShape.circle, color: Colors.black),
-              )
-            : Container(),
-      );
 
   @override
   Widget build(BuildContext context) {
@@ -97,12 +59,10 @@ class Box extends State<FormCard> {
             ),
             TextField(
               controller: _ValueUserName,
-
               decoration: InputDecoration(
                   labelText: "$_username",
                   icon: Icon(Icons.person),
                   hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
-
             ),
             SizedBox(
               height: ScreenUtil.getInstance().setHeight(30),
@@ -121,31 +81,19 @@ class Box extends State<FormCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-//                Row(
-//                  children: <Widget>[
-//                    SizedBox(
-//                      width: 12.0,
-//                    ),
-//                    GestureDetector(
-//                      onTap: _radio,
-//                      child: radioButton(_isSelected),
-//                    ),
-//                    SizedBox(
-//                      width: 8.0,
-//                    ),
-//                    Text("Remember me",
-//                        style: TextStyle(
-//                            fontSize: 12, fontFamily: "Poppins-Medium"))
-//                  ],
-//                ),
-
                 Text(
-
                   "Forgot Password?",
                   style: TextStyle(
                       color: Colors.blue,
                       fontFamily: "Poppins-Medium",
                       fontSize: ScreenUtil.getInstance().setSp(28)),
+                ),
+                new RaisedButton(
+                  child: new Text(
+                    "Click me",
+                  ),
+                  onPressed: () async {
+                  },
                 )
               ],
             )
@@ -155,3 +103,20 @@ class Box extends State<FormCard> {
     );
   }
 }
+
+//Widget radioButton(bool isSelected) => Container(
+//  width: 16.0,
+//  height: 16.0,
+//  padding: EdgeInsets.all(2.0),
+//  decoration: BoxDecoration(
+//      shape: BoxShape.circle,
+//      border: Border.all(width: 2.0, color: Colors.black)),
+//  child: isSelected
+//      ? Container(
+//    width: double.infinity,
+//    height: double.infinity,
+//    decoration:
+//    BoxDecoration(shape: BoxShape.circle, color: Colors.black),
+//  )
+//      : Container(),
+//);
