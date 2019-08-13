@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -21,8 +22,6 @@ class LoginScreenState extends State<LoginScreen>
     implements LoginScreenContract, AuthStateListener {
   BuildContext _ctx;
 
-  final _ValueEmail = TextEditingController();
-  final _ValuePassword = TextEditingController();
   String _email = "Email", _password = "Password";
 
   bool _isLoading = false;
@@ -42,10 +41,7 @@ class LoginScreenState extends State<LoginScreen>
     if (form.validate()) {
       setState(() => _isLoading = true);
       form.save();
-      print("yess");
-      print(_ValueEmail.text);
-      print(_ValuePassword.text);
-      _presenter.doLogin(_ValueEmail.text, _ValuePassword.text);
+      _presenter.doLogin(_email, _password);
     }
   }
 
@@ -67,49 +63,6 @@ class LoginScreenState extends State<LoginScreen>
     ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
     ScreenUtil.instance =
         ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
-
-    var loginBtn = new RaisedButton(
-      onPressed: _submit,
-      child: new Text("LOGIN"),
-      color: Colors.primaries[0],
-    );
-
-    var loginForm = new Column(
-      children: <Widget>[
-        new Text(
-          "Login App",
-          textScaleFactor: 2.0,
-        ),
-        new Form(
-          key: formKey,
-          child: new Column(
-            children: <Widget>[
-              new Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: new TextFormField(
-                  onSaved: (val) => _email = val,
-                  validator: (val) {
-                    return val.length < 10
-                        ? "Username must have atleast 10 chars"
-                        : null;
-                  },
-                  decoration: new InputDecoration(labelText: "Username"),
-                ),
-              ),
-              new Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: new TextFormField(
-                  onSaved: (val) => _password = val,
-                  decoration: new InputDecoration(labelText: "Password"),
-                ),
-              ),
-            ],
-          ),
-        ),
-        _isLoading ? new CircularProgressIndicator() : loginBtn
-      ],
-      crossAxisAlignment: CrossAxisAlignment.center,
-    );
 
     var BaseBackground = new Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -181,7 +134,7 @@ class LoginScreenState extends State<LoginScreen>
     );
     var ContainerFormCard = new Container(
       width: double.infinity,
-      height: ScreenUtil.getInstance().setHeight(500),
+      height: ScreenUtil.getInstance().setHeight(540),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8.0),
@@ -212,10 +165,13 @@ class LoginScreenState extends State<LoginScreen>
               key: formKey,
               child: new Column(
                 children: <Widget>[
-                  TextField(
-                    controller: _ValueEmail,
+                  new TextFormField(
+                    onSaved: (val) => _email = val,
+                    validator: (val) {
+                      return val.length < 1 ? "required" : null;
+                    },
                     decoration: InputDecoration(
-                        labelText: "$_email",
+                        labelText: "Email",
                         icon: Icon(Icons.person),
                         hintStyle:
                             TextStyle(color: Colors.grey, fontSize: 12.0)),
@@ -223,11 +179,17 @@ class LoginScreenState extends State<LoginScreen>
                   SizedBox(
                     height: ScreenUtil.getInstance().setHeight(30),
                   ),
-                  TextField(
-                    controller: _ValuePassword,
+                  new TextFormField(
                     obscureText: true,
-                    decoration: InputDecoration(
-                        labelText: "$_password",
+                    onSaved: (val) => _password = val,
+                    validator: (val) {
+                      if (val.length < 1) return "required";
+                      return val.length < 6
+                          ? "Password must have at least 6 chars"
+                          : null;
+                    },
+                    decoration: new InputDecoration(
+                        labelText: "Password",
                         icon: Icon(Icons.lock),
                         hintStyle:
                             TextStyle(color: Colors.grey, fontSize: 12.0)),
@@ -241,12 +203,17 @@ class LoginScreenState extends State<LoginScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                Text(
-                  "Forgot Password?",
-                  style: TextStyle(
-                      color: Colors.blue,
-                      fontFamily: "Poppins-Medium",
-                      fontSize: ScreenUtil.getInstance().setSp(28)),
+                InkWell(
+                  onTap: () {
+                    Navigator.of(_ctx).pushReplacementNamed("/forgotPassword");
+                  },
+                  child: new Text(
+                    "Forgot Password?",
+                    style: TextStyle(
+                        color: Colors.blue,
+                        fontFamily: "Poppins-Medium",
+                        fontSize: ScreenUtil.getInstance().setSp(28)),
+                  ),
                 )
               ],
             )
@@ -263,7 +230,9 @@ class LoginScreenState extends State<LoginScreen>
           style: TextStyle(fontFamily: "Poppins-Medium"),
         ),
         InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.of(_ctx).pushReplacementNamed("/signup");
+          },
           child: Text("SignUp",
               style: TextStyle(
                   color: Color(0xFF5d74e3), fontFamily: "Poppins-Bold")),
@@ -336,7 +305,6 @@ class LoginScreenState extends State<LoginScreen>
                   ],
                 )),
           ),
-
         ],
       ),
     );
@@ -344,18 +312,18 @@ class LoginScreenState extends State<LoginScreen>
 
   @override
   void onLoginError(String errorTxt) {
-    _showSnackBar(errorTxt);
+    _showSnackBar('Email or password is not correct!');
     setState(() => _isLoading = false);
   }
 
   @override
   void onLoginSuccess(User user) async {
-    _showSnackBar(user.toString());
+    _showSnackBar("successfully");
     setState(() => _isLoading = false);
     var db = new DatabaseHelper();
     await db.saveUser(user);
     var authStateProvider = new AuthStateProvider();
     authStateProvider.notify(AuthState.LOGGED_IN);
+
   }
 }
-

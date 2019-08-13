@@ -85,23 +85,12 @@ class home extends State<Home> implements AuthStateListener {
                     ),
                     onTap: () => print("This is your current account."),
                   ),
-//                  otherAccountsPictures: <Widget>[
-//                    new GestureDetector(
-//                      child: new CircleAvatar(
-//                        backgroundImage: new NetworkImage(otherProfilePic),
-//                      ),
-//                      onTap: () => switchAccounts(),
-//                    ),
-//                  ],
                   decoration: new BoxDecoration(
                     color: Colors.amber.withOpacity(0.7),
 
                     image:
                         new DecorationImage(image: AssetImage(otherProfilePic)),
-//                      image: new DecorationImage(
-//                          image: new NetworkImage("https://img00.deviantart.net/35f0/i/2015/018/2/6/low_poly_landscape__the_river_cut_by_bv_designs-d8eib00.jpg"),
-//                          fit: BoxFit.fill
-//                      )
+
                   ),
                 ),
                 new ListTile(

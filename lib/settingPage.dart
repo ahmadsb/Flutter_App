@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_login_page_ui/Home.dart' as prefix0;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'Home.dart';
