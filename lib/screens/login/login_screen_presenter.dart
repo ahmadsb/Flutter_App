@@ -15,6 +15,10 @@ class LoginScreenPresenter {
 
     api.login(username, password).then((User user) {
       _view.onLoginSuccess(user);
+    }, onError: (e) {
+      _view.onLoginError("Email or Password isn't correct!");
     }).catchError((Exception error) => _view.onLoginError(error.toString()));
   }
+
+
 }

@@ -14,8 +14,11 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPage extends State<SettingPage> {
+  BuildContext _ctx;
+
   @override
   Widget build(BuildContext context) {
+    _ctx = context;
     // TODO: implement build
     return new MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -26,10 +29,7 @@ class _SettingPage extends State<SettingPage> {
               leading: IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () => {
-                      Navigator.push(
-                          context,
-                          new MaterialPageRoute(
-                              builder: (myContext) => new Home()))
+                Navigator.of(_ctx).pushReplacementNamed("/home")
                     },
               )),
           body: Container(
@@ -101,10 +101,10 @@ class _SettingPage extends State<SettingPage> {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) => new Home()));
+//                        Navigator.push(
+//                            context,
+//                            new MaterialPageRoute(
+//                                builder: (context) => new Home()));
                       },
                       child: Center(
                         child: Text("SUBMIT",

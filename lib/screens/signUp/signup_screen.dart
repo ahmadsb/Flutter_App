@@ -4,18 +4,39 @@ import 'package:flutter_login_page_ui/models/user.dart';
 import 'package:flutter_login_page_ui/screens/signUp/signUp_screen_presnter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../Home.dart';
+
 class SignUp extends StatefulWidget {
+  User _user;
+
+  SignUp(this._user);
+
   @override
   State<StatefulWidget> createState() {
-    return _SignUpScreenState();
+    return _SignUpScreenState(this._user);
   }
 }
 
 class _SignUpScreenState extends State<SignUp> implements SignUpScreenContract {
   BuildContext _ctx;
-  String _username, _email, _password, _phoneNumber, _confirmPassword;
+  User _user;
+  String _username, _email, _password, _role, _phoneNumber, _confirmPassword;
   final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  bool _isSwitched = false;
+  bool _visible = false;
+
+  initState() {
+    super.initState();
+    // Add listeners to this class
+
+    if (this._user.getRole.toString() == "admin") {
+      this._visible = true;
+    } else {
+      this._visible = false;
+    }
+  }
 
   void _submit() {
     final form = formKey.currentState;
@@ -25,6 +46,7 @@ class _SignUpScreenState extends State<SignUp> implements SignUpScreenContract {
         "name": _username,
         "email": _email,
         "phone": _phoneNumber,
+        "role": _role,
         "password": _password,
         "passwordConfirm": _confirmPassword
       };
@@ -51,13 +73,17 @@ class _SignUpScreenState extends State<SignUp> implements SignUpScreenContract {
   );
   SignUpScreenPresenter _presenter;
 
-  _SignUpScreenState() {
+  _SignUpScreenState(this._user) {
     _presenter = new SignUpScreenPresenter(this);
   }
 
   void _BackPage() {
     Navigator.of(_ctx).pop();
-    Navigator.of(_ctx).pushReplacementNamed("/");
+    Navigator.pushReplacement(
+        _ctx,
+        MaterialPageRoute(
+            builder: (BuildContext context) => new Home(this._user)));
+//    Navigator.of(_ctx).pushReplacementNamed("/");
   }
 
   @override
@@ -151,6 +177,32 @@ class _SignUpScreenState extends State<SignUp> implements SignUpScreenContract {
                           hintStyle:
                               TextStyle(color: Colors.grey, fontSize: 12.0)),
                     ),
+                    space,
+                    new Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        space,
+                        Text("admin"),
+                        Switch(
+                          value: _isSwitched,
+                          activeColor: Colors.green,
+                          onChanged: (bool value) {
+                            setState(() {
+                              _isSwitched = value;
+                              if (_isSwitched) {
+                                this._role = "admin";
+                              } else {
+                                this._role = "user";
+                              }
+                            });
+                          },
+                        ),
+                        space,
+
+                      ],
+                    ),
+                    space,
+                    space,
                     space,
                     new Container(
                       width: ScreenUtil.getInstance().setWidth(330),

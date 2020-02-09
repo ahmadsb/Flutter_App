@@ -9,6 +9,9 @@ import 'package:flutter_login_page_ui/data/database_helper.dart';
 import 'package:flutter_login_page_ui/models/user.dart';
 import 'package:flutter_login_page_ui/screens/login/login_screen_presenter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../Home.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -23,7 +26,7 @@ class LoginScreenState extends State<LoginScreen>
   BuildContext _ctx;
 
   String _email = "Email", _password = "Password";
-
+  final String _facebookURL = 'https://www.facebook.com/TamerBeautyCenter/?ref=br_rs';
   bool _isLoading = false;
   final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -34,6 +37,13 @@ class LoginScreenState extends State<LoginScreen>
     _presenter = new LoginScreenPresenter(this);
     var authStateProvider = new AuthStateProvider();
     authStateProvider.subscribe(this);
+  }
+  _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   void _submit() {
@@ -54,6 +64,7 @@ class LoginScreenState extends State<LoginScreen>
   onAuthStateChanged(AuthState state) {
     if (state == AuthState.LOGGED_IN)
       Navigator.of(_ctx).pushReplacementNamed("/home");
+
   }
 
   @override
@@ -104,7 +115,9 @@ class LoginScreenState extends State<LoginScreen>
             Color(0xFF00eaf8),
           ],
           iconData: CustomIcons.facebook,
-          onPressed: () {},
+          onPressed: (){
+            _launchURL(_facebookURL);
+          },
         ),
         SocialIcon(
           colors: [
@@ -222,23 +235,25 @@ class LoginScreenState extends State<LoginScreen>
       ),
     );
 
-    var RowSignUp = new Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          "New User? ",
-          style: TextStyle(fontFamily: "Poppins-Medium"),
-        ),
-        InkWell(
-          onTap: () {
-            Navigator.of(_ctx).pushReplacementNamed("/signup");
-          },
-          child: Text("SignUp",
-              style: TextStyle(
-                  color: Color(0xFF5d74e3), fontFamily: "Poppins-Bold")),
-        )
-      ],
-    );
+//    var RowSignUp = new Row(
+//      mainAxisAlignment: MainAxisAlignment.center,
+//      children: <Widget>[
+//        Text(
+//          "New User? ",
+//          style: TextStyle(fontFamily: "Poppins-Medium"),
+//        ),
+//        InkWell(
+//          onTap: () {
+//            Navigator.pushReplacement(
+//                _ctx, MaterialPageRoute(builder: (BuildContext context) => new Home(user)));
+////            Navigator.of(_ctx).pushReplacementNamed("/signup");
+//          },
+//          child: Text("SignUp",
+//              style: TextStyle(
+//                  color: Color(0xFF5d74e3), fontFamily: "Poppins-Bold")),
+//        )
+//      ],
+//    );
     return new Scaffold(
       appBar: null,
       key: scaffoldKey,
@@ -259,7 +274,7 @@ class LoginScreenState extends State<LoginScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        RowSignUp,
+
                         InkWell(
                           child: Container(
                             width: ScreenUtil.getInstance().setWidth(330),
@@ -310,20 +325,36 @@ class LoginScreenState extends State<LoginScreen>
     );
   }
 
-  @override
-  void onLoginError(String errorTxt) {
-    _showSnackBar('Email or password is not correct!');
-    setState(() => _isLoading = false);
-  }
 
   @override
   void onLoginSuccess(User user) async {
     _showSnackBar("successfully");
-    setState(() => _isLoading = false);
+    setState(() {
+      _isLoading = false;
+      Navigator.pushReplacement(
+          _ctx, MaterialPageRoute(builder: (BuildContext context) => new Home(user)));
+//      Navigator.of(_ctx).pushReplacementNamed("/home");
+
+    });
     var db = new DatabaseHelper();
     await db.saveUser(user);
     var authStateProvider = new AuthStateProvider();
     authStateProvider.notify(AuthState.LOGGED_IN);
+
+
+  }
+
+  @override
+  void onLoginError(String errorTxt) {
+
+      _showSnackBar(errorTxt);
+      setState((){
+        _isLoading = false;
+//      _showSnackBar('Email or password is not correct!');
+      });
+      var authStateProvider = new AuthStateProvider();
+      authStateProvider.notify(AuthState.LOGGED_OUT);
+
 
   }
 }

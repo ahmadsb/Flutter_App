@@ -33,14 +33,12 @@ class NetworkUtil {
 
 
     return  await http.post(url, body: body, headers: headers)
-        .then((http.Response response) {
+        .then((dynamic response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
-
       if (statusCode < 200 || statusCode > 400 || body == null) {
-        throw new Exception("Email or password is not correct!");
+        throw new Exception(response["error_msg"]);
       }
-
 
       return _decoder.convert(res);
     });

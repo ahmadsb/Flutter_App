@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_login_page_ui/screens/signUp/signup_screen.dart';
 import 'package:flutter_login_page_ui/settingPage.dart';
 import 'package:flutter_login_page_ui/utils/auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,20 +10,41 @@ import 'Widgets/CardChoose.dart';
 import 'Widgets/BarbersList.dart';
 import 'Widgets/SliderImages.dart';
 import 'data/database_helper.dart';
+import 'models/user.dart';
 
 class Home extends StatefulWidget {
+  User _user;
+
+  Home(this._user);
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return new home();
+    return new home(this._user);
   }
 }
 
 class home extends State<Home> implements AuthStateListener {
   BuildContext _ctx;
-
+  User _user;
   String currentProfilePic = "assets/ahmad.jpg";
   String otherProfilePic = "assets/drawer.png";
+
+  bool _visible = false;
+
+  home(this._user);
+
+  @override
+  initState() {
+    super.initState();
+    // Add listeners to this class
+
+    if (this._user.getRole.toString() == "admin") {
+      this._visible = true;
+    } else {
+      this._visible = false;
+    }
+  }
 
   void switchAccounts() {
     String picBackup = currentProfilePic;
@@ -44,6 +66,7 @@ class home extends State<Home> implements AuthStateListener {
   @override
   Widget build(BuildContext context) {
     _ctx = context;
+
     final TextStyle textStyle = Theme.of(context).textTheme.display1;
 
     // TODO: implement build
@@ -64,8 +87,8 @@ class home extends State<Home> implements AuthStateListener {
             child: new ListView(
               children: <Widget>[
                 new UserAccountsDrawerHeader(
-                  accountEmail: new Text("ahmadsb1994@gmail.com"),
-                  accountName: new Text("Ahmad Sabbah"),
+                  accountEmail: new Text(this._user.getEmail.toString()),
+                  accountName: new Text(this._user.getName.toString()),
                   currentAccountPicture: new GestureDetector(
                     child: new Container(
                       margin: new EdgeInsets.symmetric(vertical: 0.0),
@@ -87,55 +110,66 @@ class home extends State<Home> implements AuthStateListener {
                   ),
                   decoration: new BoxDecoration(
                     color: Colors.amber.withOpacity(0.7),
-
                     image:
                         new DecorationImage(image: AssetImage(otherProfilePic)),
-
                   ),
                 ),
-                new ListTile(
-                    title: new Text("Add User"),
-                    leading: new Icon(Icons.group_add),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(new MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              new Text("First Page")));
-                    }),
-                new ListTile(
-                    title: new Text("Notification"),
-                    leading: new Icon(Icons.notifications),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(new MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              new Text("First Page")));
-                    }),
-                new ListTile(
-                    title: new Text("About us"),
-                    leading: new Icon(Icons.group),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(new MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              new Text("Second Page")));
-                    }),
-                new ListTile(
-                    title: new Text("Settings"),
-                    leading: new Icon(Icons.settings),
-                    onTap: () {
+                new Column(
+                  children: <Widget>[
+                    if (this._visible)
+                      new ListTile(
+                          title: new Text("Add User"),
+                          leading: new Icon(Icons.group_add),
+                          onTap: () {
 //                      Navigator.of(context).pop();
-                      Navigator.push(
-                          context,
-                          new MaterialPageRoute(
-                              builder: (context) => new SettingPage()));
-                    }),
-                new Divider(),
-                new ListTile(
-                  title: new Text("Log out"),
-                  leading: new Icon(Icons.exit_to_app),
-                  onTap: () => {onAuthStateChanged(AuthState.LOGGED_OUT)},
-                ),
+                            Navigator.pushReplacement(
+                                _ctx,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        new SignUp(this._user)));
+//                            Navigator.of(_ctx).pushReplacementNamed("/signup");
+                          }),
+
+                    if (this._visible)
+                      new ListTile(
+                          title: new Text("Users List"),
+                          leading: new Icon(Icons.view_list),
+                          onTap: () {
+//                      Navigator.of(context).pop();
+//    Navigator.pushReplacement(
+//    _ctx, MaterialPageRoute(builder: (BuildContext context) => new SignUp(this._user)));
+//                            Navigator.of(_ctx).pushReplacementNamed("/signup");
+                          }),
+                    new ListTile(
+                        title: new Text("Notification"),
+                        leading: new Icon(Icons.notifications),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(_ctx).pushReplacementNamed("/home");
+                        }),
+                    new ListTile(
+                        title: new Text("About us"),
+                        leading: new Icon(Icons.group),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(_ctx).pushReplacementNamed("/home");
+                        }),
+                    new ListTile(
+                        title: new Text("Settings"),
+                        leading: new Icon(Icons.settings),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(_ctx)
+                              .pushReplacementNamed("/settingPage");
+                        }),
+                    new Divider(),
+                    new ListTile(
+                      title: new Text("Log out"),
+                      leading: new Icon(Icons.exit_to_app),
+                      onTap: () => {onAuthStateChanged(AuthState.LOGGED_OUT)},
+                    ),
+                  ],
+                )
               ],
             ),
           ),
@@ -166,12 +200,12 @@ class home extends State<Home> implements AuthStateListener {
                                 child: Center(
                                     child: InkWell(
                                   onTap: () => {
-                                        Navigator.push(
-                                            context,
-                                            new MaterialPageRoute(
-                                                builder: (context) =>
-                                                    new BarbersList()))
-                                      },
+                                    Navigator.push(
+                                        context,
+                                        new MaterialPageRoute(
+                                            builder: (context) =>
+                                                new BarbersList()))
+                                  },
                                   child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment:
@@ -190,12 +224,12 @@ class home extends State<Home> implements AuthStateListener {
                               height: MediaQuery.of(context).size.width / 2,
                               child: InkWell(
                                 onTap: () => {
-                                      Navigator.push(
-                                          context,
-                                          new MaterialPageRoute(
-                                              builder: (context) =>
-                                                  new BarbersList()))
-                                    },
+                                  Navigator.push(
+                                      context,
+                                      new MaterialPageRoute(
+                                          builder: (context) =>
+                                              new BarbersList()))
+                                },
                                 child: Card(
                                     color: Colors.white,
                                     child: Center(

@@ -7,9 +7,8 @@ import 'package:flutter_login_page_ui/models/CustomIcons.dart';
 import 'package:flutter_login_page_ui/Home.dart';
 
 void main() => runApp(new MyApp());
+
 class MyApp extends StatelessWidget {
-
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -22,6 +21,4 @@ class MyApp extends StatelessWidget {
       routes: routes,
     );
   }
-
-
 }
